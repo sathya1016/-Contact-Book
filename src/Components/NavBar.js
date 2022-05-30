@@ -8,6 +8,7 @@ import {
   Button,
 } from "@mui/material";
 import ContactsIcon from "@mui/icons-material/Contacts";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
@@ -21,9 +22,9 @@ const Navbar = () => {
         </Typography>
 
         <Stack direction="row" spacing={2}>
-          <Button color="inherit">Home</Button>
-          <Button color="inherit">Login</Button>
-          <Button color="inherit">Register</Button>
+          <Link to="/signup" size="large" color="inherit">
+            Sigup
+          </Link>
         </Stack>
       </Toolbar>
     </AppBar>

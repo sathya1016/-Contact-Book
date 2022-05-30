@@ -2,7 +2,7 @@ import * as React from "react";
 import Grid from "@mui/material/Grid";
 import Item from "@mui/material/ListItem";
 import { Box } from "@mui/system";
-import { makeStyles } from "@mui/material";
+// import { makeStyles } from "@mui/material";
 import {
   TextField,
   Button,
@@ -19,7 +19,7 @@ import {
 import { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { CenterFocusStrong } from "@mui/icons-material";
-export default function Hometable() {
+export default function Home() {
   const [name, setName] = useState(" ");
   const [email, setEmail] = useState(" ");
   const [number, setNumber] = useState(0);
@@ -136,7 +136,7 @@ export default function Hometable() {
         <Typography component="h1" variant="h5" color="blue">
           Your Contacts
         </Typography>
-        
+
         <TableContainer align={CenterFocusStrong} component={Paper}>
           <Table aria-label="simple table">
             <TableHead border="1px">

@@ -1,13 +1,13 @@
-import Hometable from "./Components/Home";
-import Navbar from "./Components/NavBar";
-import SignInContainer from "./containers";
+// import Hometable from "./components/Home";
+import Navbar from "./components/NavBar";
+
 
 function App() {
   return (
     <>
       <Navbar />
-      <Hometable />
-      <SignInContainer/>
+     
+      
     </>
   );
 }
