@@ -2,7 +2,11 @@ import * as React from "react";
 import Grid from "@mui/material/Grid";
 import Item from "@mui/material/ListItem";
 import { Box } from "@mui/system";
-import { makeStyles } from "@mui/material";
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+
 import {
   TextField,
   Button,
@@ -19,35 +23,31 @@ import {
 import { useState, useEffect } from "react";
 import { db } from "../firebase";
 import { CenterFocusStrong } from "@mui/icons-material";
+const filter = createFilterOptions();
 export default function Hometable() {
-  const [name, setName] = useState(" ");
+  const [id, setid] = useState(" ");
   const [email, setEmail] = useState(" ");
   const [number, setNumber] = useState(0);
   const [conValue, setConValue] = useState([]);
-
-  // const useStyles = makeStyles({
-  //   sticky: {
-  //     position: "sticky",
-  //     left: 0,
-  //     background: "white",
-  //     boxShadow: "5px 2px 5px grey",
-  //   },
-  // });
+  const [name, setValue] = useState(null);
+  const [value, setvalue] = useState(new Date());
 
   const handleSubmit = () => {
-    console.log(name, email, number);
+    console.log(id, name, email, number);
     const res = db.collection("contacts").add({
+      ID: id,
       name: name,
       email: email,
-      number: number,
+      Phnumber: number,
     });
-    console.log(res);
-    setName("");
+    // console.log(res);
+    setid("");
+    setValue("");
     setEmail("");
     setNumber("");
   };
   const ref = db.collection("contacts");
-  console.log(ref);
+  // console.log(ref);
   const getData = () => {
     ref.onSnapshot(query => {
       const details = [];
@@ -55,14 +55,12 @@ export default function Hometable() {
         details.push(docs.data());
       });
       setConValue(details);
-      console.log(details);
+      // console.log(details);
     });
   };
   useEffect(() => {
     getData();
   }, []);
-
-  // const classes = useStyles();
 
   return (
     <Grid container spacing={2} columns={16}>
@@ -79,20 +77,77 @@ export default function Hometable() {
               Create New Contact
             </Typography>
             <TextField
-              variant="standard"
+              variant="outlined"
               margin="normal"
               required
               fullWidth
-              id="name"
-              label="Enter name"
-              name="name"
-              autoComplete="name"
+              id="id"
+              label="Enter id"
+              name="id"
+              autoComplete="id"
               autoFocus
-              onChange={e => setName(e.target.value)}
+              onChange={e => setid(e.target.value)}
+              value={id}
+            />
+            <Autocomplete
               value={name}
+              onChange={(event, newValue) => {
+                if (typeof newValue === "string") {
+                  setValue({
+                    label: newValue,
+                  });
+                } else if (newValue && newValue.inputValue) {
+                  // Create a new value from the user input
+                  setValue({
+                    label: newValue.inputValue,
+                  });
+                } else {
+                  setValue(newValue);
+                }
+              }}
+              filterOptions={(options, params) => {
+                const filtered = filter(options, params);
+
+                const { inputValue } = params;
+                // Suggest the creation of a new value
+                const isExisting = options.some(
+                  option => inputValue === option.label
+                );
+                if (inputValue !== "" && !isExisting) {
+                  filtered.push({
+                    inputValue,
+                    label: `Add "${inputValue}"`,
+                  });
+                }
+
+                return filtered;
+              }}
+              selectOnFocus
+              clearOnBlur
+              handleHomeEndKeys
+              id="free-solo-with-text-demo"
+              options={EMP_NAME}
+              getOptionLabel={option => {
+                // Value selected with enter, right from the input
+                if (typeof option === "string") {
+                  return option;
+                }
+                // Add "xxx" option created dynamically
+                if (option.inputValue) {
+                  return option.inputValue;
+                }
+                // Regular option
+                return option.label;
+              }}
+              renderOption={(props, option) => (
+                <li {...props}>{option.label}</li>
+              )}
+              sx={{ width: 300 }}
+              freeSolo
+              renderInput={params => <TextField {...params} label="Emp_Name" />}
             />
             <TextField
-              variant="standard"
+              variant="outlined"
               margin="normal"
               required
               fullWidth
@@ -105,7 +160,7 @@ export default function Hometable() {
               value={email}
             />
             <TextField
-              variant="standard"
+              variant="outlined"
               margin="normal"
               required
               fullWidth
@@ -128,6 +183,16 @@ export default function Hometable() {
               >
                 Create contact
               </Button>
+              <Button
+                type="submit"
+                p={5}
+                width={5}
+                variant="contained"
+                color="primary"
+                disabled
+              >
+                Update
+              </Button>
             </Link>
           </Box>
         </Item>
@@ -136,11 +201,12 @@ export default function Hometable() {
         <Typography component="h1" variant="h5" color="blue">
           Your Contacts
         </Typography>
-        
+
         <TableContainer align={CenterFocusStrong} component={Paper}>
           <Table aria-label="simple table">
             <TableHead border="1px">
               <TableRow>
+                <TableCell align="center">ID</TableCell>
                 <TableCell align="center">Name</TableCell>
                 <TableCell align="center">Email</TableCell>
                 <TableCell align="center">Number</TableCell>
@@ -152,15 +218,63 @@ export default function Hometable() {
                   key={row.name}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
-                  <TableCell align="center">{row.name}</TableCell>
+                  <TableCell align="center">{row.ID}</TableCell>
+                  <TableCell align="center">{row.name.label}</TableCell>
                   <TableCell align="center">{row.email}</TableCell>
-                  <TableCell align="center">{row.number}</TableCell>
+                  <TableCell align="center">{row.Phnumber}</TableCell>
+                  <TableCell align="center">
+                    <Button>Edit</Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Grid>
+      {/* <DatePicker
+          views={["day"]}
+          label="Just date"
+          value={value}
+          onChange={newValue => {
+            setvalue(newValue);
+          }}
+          renderInput={params => <TextField {...params} helperText={null} />}
+        /> */}
     </Grid>
   );
 }
+const EMP_NAME = [
+  {
+    label: "John",
+  },
+  {
+    label: "Sam",
+  },
+  {
+    label: "James",
+  },
+  {
+    label: "Roy",
+  },
+  {
+    label: "Endrik",
+  },
+  {
+    label: "Dustin",
+  },
+  {
+    label: "Max",
+  },
+  {
+    label: "Antonin",
+  },
+  {
+    label: "Edward",
+  },
+  {
+    label: "Mike",
+  },
+  {
+    label: "Eleven",
+  },
+];

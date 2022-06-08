@@ -1,4 +1,5 @@
 import React from "react";
+
 // import { useState } from "react";
 import {
   Grid,
@@ -72,14 +73,12 @@ const Signup = () => {
       .required("Required"),
     confirmpassword: Yup.string()
       .oneOf([Yup.ref("password")], "Passwords not matched")
-      .required("Required")
+      .required("Required"),
   });
-  const onSubmit = (values,props) => {
+  const onSubmit = (values, props) => {
     console.log(values);
     console.log(props);
     props.resetForm();
-
-  
   };
 
   return (
@@ -99,7 +98,7 @@ const Signup = () => {
           onSubmit={onSubmit}
           validationSchema={validationSchema}
         >
-          {(props) => (
+          {props => (
             <Form>
               {console.log(props)}
               <Field
